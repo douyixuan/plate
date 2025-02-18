@@ -1,4 +1,4 @@
-# plate README
+# Plate README
 
 This is the README for your extension "plate". After writing up a brief description, we recommend including the following sections.
 

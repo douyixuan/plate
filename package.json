@@ -1,6 +1,6 @@
 {
   "name": "plate",
-  "displayName": "plate",
+  "displayName": "Plate",
   "description": "A WYSIWYG markdown editor in VSCode.",
   "version": "0.0.1",
   "engines": {
