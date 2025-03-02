@@ -1,7 +1,7 @@
 {
   "name": "plate",
-  "displayName": "Plate",
-  "description": "A WYSIWYG markdown editor in VSCode.",
+  "displayName": "Plate Markdown Editor",
+  "description": "A WYSIWYG markdown editor in VSCode using Plate editor framework.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.97.0"
@@ -9,15 +9,42 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCustomEditor:plate.markdownEditor"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "plate.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "plate.openWithPlate",
+        "title": "Open with Plate Markdown Editor"
       }
-    ]
+    ],
+    "customEditors": [
+      {
+        "viewType": "plate.markdownEditor",
+        "displayName": "Plate Markdown Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.md"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceLangId == markdown",
+          "command": "plate.openWithPlate",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
@@ -28,7 +55,15 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "dev": "pnpm run watch",
+    "start": "code --extensionDevelopmentPath=$PWD",
+    "dev:ext": "pnpm run watch & pnpm run start",
+    "clean": "rimraf dist out *.vsix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
+    "build": "pnpm run lint && pnpm run compile",
+    "vsce:package": "vsce package",
+    "vsce:publish": "vsce publish"
   },
   "devDependencies": {
     "@types/vscode": "^1.97.0",
@@ -42,6 +77,21 @@
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "@plate/basic-elements": "^30.6.3",
+    "@plate/basic-marks": "^30.6.3",
+    "@plate/markdown": "^30.6.3",
+    "@udecode/plate-common": "42.0.0",
+    "@udecode/plate-core": "^23.9.0",
+    "@udecode/plate-ui-toolbar": "^23.9.0",
+    "@vscode/webview-ui-toolkit": "^1.2.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "slate": "^0.101.5",
+    "slate-react": "^0.101.5"
   }
 }
