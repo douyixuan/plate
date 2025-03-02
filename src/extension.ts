@@ -3,6 +3,24 @@
 import * as vscode from 'vscode';
 import { PlateEditorProvider } from './plateEditorProvider';
 
+import * as path from "path";
+
+function getWebviewContent(indexUri: vscode.Uri) {
+    return `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Next.js Webview</title>
+        </head>
+        <body>
+            <iframe src="${indexUri}" width="100%" height="100%" style="border: none;"></iframe>
+        </body>
+        </html>
+    `;
+}
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -10,6 +28,19 @@ export function activate(context: vscode.ExtensionContext) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "plate" is now active!');
+	
+	let panel = vscode.window.createWebviewPanel(
+        "nextjsView",
+        "Next.js UI",
+        vscode.ViewColumn.One,
+        {
+            enableScripts: true,
+            localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, "webview"))]
+        }
+    );
+
+    const indexPath = vscode.Uri.file(path.join(context.extensionPath, "webview", "index.html"));
+    panel.webview.html = getWebviewContent(indexPath);
 
 	// Register the custom editor provider
 	context.subscriptions.push(
