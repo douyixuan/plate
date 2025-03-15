@@ -1,18 +1,23 @@
 {
   "compilerOptions": {
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "target": "ES2022",
-    "lib": [
-      "ES2022",
-      "DOM"
-    ],
-    "jsx": "react-jsx",
+    "target": "es2020",
+    "module": "commonjs",
+    "lib": ["es2020"],
     "sourceMap": true,
-    "rootDir": "src",
-    "strict": true
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
+  "include": [
+    "src/**/*.ts"
+  ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "frontend/**/*",
+    "**/*.test.ts"
   ]
 }

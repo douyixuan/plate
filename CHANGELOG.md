@@ -1,9 +1,21 @@
-# Change Log
+# Changelog
 
-All notable changes to the "plate" extension will be documented in this file.
+## [0.0.1] - 2025-03-15
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+### Added
+- Initial release of Plate Markdown Editor
+- Basic markdown editing support
+- Custom editor for .md files
+- Integration with VSCode markdown files
 
-## [Unreleased]
+### Features
+- WYSIWYG markdown editing
+- Headings (H1, H2, H3)
+- Paragraph support
+- Blockquote support
 
-- Initial release
+### Planned Features
+- Text formatting (bold, italic)
+- Lists
+- Code blocks
+- Links and images

@@ -1,7 +1,7 @@
 {
   "name": "plate",
   "displayName": "Plate Markdown Editor",
-  "description": "A WYSIWYG markdown editor in VSCode using Plate editor framework.",
+  "description": "A WYSIWYG markdown editor in VSCode using Slate editor framework.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.97.0"
@@ -82,10 +82,7 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "@udecode/cn": "^44.0.1",
-    "@udecode/plate": "^45.0.9",
-    "@udecode/plate-basic-marks": "^45.0.0",
-    "@udecode/plate-block-quote": "^44.0.0",
-    "@udecode/plate-heading": "^44.0.0"
+    "slate": "^0.112.0",
+    "slate-react": "^0.112.1"
   }
 }

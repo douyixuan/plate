@@ -1,5 +1,11 @@
 import * as vscode from 'vscode';
 import { getNonce } from './utilities';
+import { 
+  MarkdownParser, 
+  MarkdownNode, 
+  validateMessage,
+  EditorMessageType
+} from './markdown-parser';
 
 /**
  * Define a custom document type for our editor
@@ -56,7 +62,8 @@ export class PlateEditorProvider implements vscode.CustomEditorProvider<PlateDoc
     webviewPanel.webview.options = {
       enableScripts: true,
       localResourceRoots: [
-        vscode.Uri.joinPath(this.context.extensionUri, 'dist')
+        vscode.Uri.joinPath(this.context.extensionUri, 'dist'),
+        vscode.Uri.joinPath(this.context.extensionUri, 'webview')
       ]
     };
     
@@ -142,13 +149,14 @@ export class PlateEditorProvider implements vscode.CustomEditorProvider<PlateDoc
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
-        <title>Plate Markdown Editor</title>
+        <title>Markdown Editor</title>
       </head>
       <body>
         <div id="root"></div>
         <script nonce="${nonce}">
           // Basic webview setup
           const vscode = acquireVsCodeApi();
+          window.initialContent = '';
         </script>
         <script nonce="${nonce}" src="${webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'webview.js'))}"></script>
       </body>
@@ -162,7 +170,13 @@ export class PlateEditorProvider implements vscode.CustomEditorProvider<PlateDoc
   private setupWebviewMessageListener(webview: vscode.Webview, documentUri: vscode.Uri) {
     webview.onDidReceiveMessage(
       async (message) => {
-        switch (message.command) {
+        // Validate incoming message
+        if (!validateMessage(message)) {
+          vscode.window.showErrorMessage('Invalid message received');
+          return;
+        }
+
+        switch (message.type) {
           case 'save':
             // Handle save request
             try {
@@ -173,6 +187,25 @@ export class PlateEditorProvider implements vscode.CustomEditorProvider<PlateDoc
             } catch (e) {
               vscode.window.showErrorMessage(`Failed to save file: ${e}`);
             }
+            break;
+          
+          case 'update':
+            // Handle content updates
+            try {
+              // Fire change event to track document modifications
+              this._onDidChangeCustomDocument.fire({
+                document: new PlateDocument(documentUri),
+                undo: () => {},
+                redo: () => {}
+              });
+            } catch (e) {
+              vscode.window.showErrorMessage(`Failed to update document: ${e}`);
+            }
+            break;
+          
+          case 'error':
+            // Handle error messages from webview
+            vscode.window.showErrorMessage(message.content);
             break;
         }
       },
@@ -187,9 +220,15 @@ export class PlateEditorProvider implements vscode.CustomEditorProvider<PlateDoc
   private async loadDocumentContent(webview: vscode.Webview, documentUri: vscode.Uri) {
     try {
       const content = await vscode.workspace.fs.readFile(documentUri);
+      const markdownContent = Buffer.from(content).toString();
+      
+      // Parse markdown content
+      const parsedContent = MarkdownParser.parse(markdownContent);
+      
       webview.postMessage({
-        command: 'load',
-        content: Buffer.from(content).toString()
+        type: 'load',
+        content: markdownContent,
+        version: Date.now().toString()
       });
     } catch (e) {
       vscode.window.showErrorMessage(`Failed to load file: ${e}`);
@@ -203,7 +242,10 @@ export class PlateEditorProvider implements vscode.CustomEditorProvider<PlateDoc
     const webview = this.webviews.get(uri.toString())?.webview;
     if (webview) {
       // Request content from webview and save it
-      webview.postMessage({ command: 'requestSave' });
+      webview.postMessage({ 
+        type: 'requestSave',
+        version: Date.now().toString()
+      });
       // The actual saving happens when the webview responds with a save message
     }
   }
