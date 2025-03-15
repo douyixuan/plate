@@ -3,43 +3,56 @@
   "displayName": "Plate Markdown Editor",
   "description": "A powerful markdown editor for VSCode",
   "version": "0.1.0",
+  "publisher": "yourPublisherName",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
-    "Other"
+    "Markdown",
+    "Editor"
   ],
   "activationEvents": [
-    "onCommand:plate.startEditor",
-    "onCommand:plate.openWithPlate"
+    "*"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "plate.startEditor",
-        "title": "Plate: Start New Markdown Editor",
-        "category": "Plate"
+        "command": "plate.newMarkdownFile",
+        "title": "Plate: New Markdown File",
+        "category": "Plate Markdown Editor"
       },
       {
         "command": "plate.openWithPlate",
         "title": "Plate: Open Markdown File",
-        "category": "Plate"
+        "category": "Plate Markdown Editor"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "plate.newMarkdownFile",
+        "key": "ctrl+alt+n",
+        "mac": "cmd+option+n"
+      },
+      {
+        "command": "plate.openWithPlate",
+        "key": "ctrl+alt+o", 
+        "mac": "cmd+option+o"
       }
     ],
     "menus": {
-      "editor/title": [
-        {
-          "command": "plate.startEditor",
-          "group": "navigation",
-          "when": "resourceLangId == markdown"
-        }
-      ],
       "explorer/context": [
         {
           "command": "plate.openWithPlate",
-          "group": "navigation",
-          "when": "resourceLangId == markdown"
+          "when": "resourceLangId == markdown",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "plate.openWithPlate",
+          "when": "resourceLangId == markdown",
+          "group": "navigation"
         }
       ]
     },
@@ -47,6 +60,7 @@
       {
         "viewType": "plate.markdownEditor",
         "displayName": "Plate Markdown Editor",
+        "priority": "default",
         "selector": [
           {
             "filenamePattern": "*.md"
@@ -78,8 +92,6 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "slate": "^0.112.0",
     "slate-react": "^0.112.1"
   }
