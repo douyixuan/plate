@@ -11,7 +11,7 @@ import {
   MarkdownParser, 
   MarkdownNode, 
   MarkdownNodeType,
-  validateMessage 
+  TextNode
 } from '../../../src/markdown-parser';
 
 // Extend Slate types to support our custom markdown types
@@ -24,18 +24,18 @@ declare module 'slate' {
 }
 
 // Custom element type that extends BaseElement
-interface CustomElement extends BaseElement {
+type CustomElement = BaseElement & {
   type: MarkdownNodeType;
   children: (CustomElement | CustomText)[];
-}
+};
 
 // Custom text type that extends BaseText
-interface CustomText extends BaseText {
+type CustomText = BaseText & {
   text: string;
   bold?: boolean;
   italic?: boolean;
   code?: boolean;
-}
+};
 
 // Type guard to check if an element is a CustomElement
 function isCustomElement(element: Descendant): element is CustomElement {
@@ -58,7 +58,7 @@ declare function acquireVsCodeApi(): {
 function markdownToSlate(nodes: MarkdownNode[]): CustomElement[] {
   return nodes.map(node => ({
     type: node.type,
-    children: node.children.map(child => 
+    children: node.children.map((child: TextNode | MarkdownNode) => 
       'text' in child 
         ? { 
             text: child.text, 
@@ -78,7 +78,7 @@ function slateToMarkdown(nodes: Descendant[]): MarkdownNode[] {
       type: node.type,
       children: node.children
         .filter(isCustomText)
-        .map(child => ({ 
+        .map((child: CustomText) => ({ 
           text: child.text, 
           ...(child.bold && { bold: true }), 
           ...(child.italic && { italic: true }) 
@@ -102,8 +102,8 @@ export const PlateEditor: React.FC = () => {
     
     // Enhanced message handler with validation
     const messageHandler = (event: MessageEvent) => {
-      // Validate incoming message
-      if (!validateMessage(event.data)) {
+      // Basic message validation
+      if (!event.data || typeof event.data !== 'object') {
         console.error('Invalid message received', event.data);
         return;
       }

@@ -120,7 +120,7 @@ export class MarkdownParser {
 }
 
 // Message protocol for communication
-export type EditorMessageType = 'load' | 'save' | 'update' | 'error';
+export type EditorMessageType = 'load' | 'save' | 'update' | 'error' | 'requestLoad';
 
 export interface EditorMessage {
   version: string;
@@ -135,7 +135,7 @@ export function validateMessage(message: unknown): message is EditorMessage {
   const msg = message as EditorMessage;
   return (
     typeof msg.version === 'string' &&
-    ['load', 'save', 'update', 'error'].includes(msg.type) &&
+    ['load', 'save', 'update', 'error', 'requestLoad'].includes(msg.type) &&
     typeof msg.content === 'string'
   );
 }

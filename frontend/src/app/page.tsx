@@ -1,20 +1,66 @@
 "use client";
-import { PlateElement, PlateLeaf, PlateProvider, createPlateEditor } from "@udecode/plate-ui";
-import { useState } from "react";
+import { createEditor, BaseEditor, BaseElement, BaseText, Descendant } from 'slate';
+import { Slate, Editable, withReact } from 'slate-react';
+import { useState, useMemo } from 'react';
+import { MarkdownNodeType } from '../../../src/markdown-parser';
 
-const components = {
-  element: PlateElement,
-  leaf: PlateLeaf,
+// Extend Slate types to support our custom markdown types
+declare module 'slate' {
+  interface CustomTypes {
+    Editor: BaseEditor;
+    Element: CustomElement;
+    Text: CustomText;
+  }
+}
+
+// Custom element type that extends BaseElement
+type CustomElement = BaseElement & {
+  type: MarkdownNodeType;
+  children: (CustomElement | CustomText)[];
+};
+
+// Custom text type that extends BaseText
+type CustomText = BaseText & {
+  text: string;
+  bold?: boolean;
+  italic?: boolean;
+  code?: boolean;
 };
 
 export default function Home() {
-  const [editor] = useState(() => createPlateEditor());
+  const [content, setContent] = useState<CustomElement[]>([
+    {
+      type: 'paragraph',
+      children: [{ text: 'Start writing your markdown here...' }]
+    }
+  ]);
+
+  const editor = useMemo(() => withReact(createEditor()), []);
 
   return (
-    <PlateProvider editor={editor} components={components}>
-      <div style={{ padding: "30px" }}>
-        <div className="editor">Plate Editor</div>
-      </div>
-    </PlateProvider>
+    <Slate 
+      editor={editor} 
+      initialValue={content}
+      onChange={(newContent: Descendant[]) => {
+        // Filter and ensure only CustomElements are set
+        const filteredContent = newContent.filter(
+          (node): node is CustomElement => 
+            typeof node === 'object' && 
+            'type' in node && 
+            'children' in node
+        );
+        setContent(filteredContent);
+      }}
+    >
+      <Editable 
+        placeholder="Write your markdown here..."
+        style={{
+          padding: '20px',
+          minHeight: '300px',
+          border: '1px solid #ccc',
+          borderRadius: '4px'
+        }}
+      />
+    </Slate>
   );
 }

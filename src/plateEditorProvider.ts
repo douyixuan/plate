@@ -207,6 +207,11 @@ export class PlateEditorProvider implements vscode.CustomEditorProvider<PlateDoc
             // Handle error messages from webview
             vscode.window.showErrorMessage(message.content);
             break;
+
+          case 'requestLoad':
+            // Trigger document loading
+            this.loadDocumentContent(webview, documentUri);
+            break;
         }
       },
       undefined,
