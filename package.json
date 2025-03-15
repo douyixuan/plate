@@ -26,8 +26,23 @@
         "command": "plate.openWithPlate",
         "title": "Plate: Open Markdown File",
         "category": "Plate Markdown Editor"
+      },
+      {
+        "command": "plate.toggleLogging",
+        "title": "Plate: Toggle Logging",
+        "category": "Plate Markdown Editor"
       }
     ],
+    "configuration": {
+      "title": "Plate Markdown Editor",
+      "properties": {
+        "plate.enableLogging": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable detailed logging for Plate Markdown Editor"
+        }
+      }
+    },
     "keybindings": [
       {
         "command": "plate.newMarkdownFile",
@@ -38,6 +53,11 @@
         "command": "plate.openWithPlate",
         "key": "ctrl+alt+o", 
         "mac": "cmd+option+o"
+      },
+      {
+        "command": "plate.toggleLogging",
+        "key": "ctrl+alt+l",
+        "mac": "cmd+option+l"
       }
     ],
     "menus": {
